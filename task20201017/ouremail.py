@@ -47,7 +47,7 @@ def send_email2(SMTP_host, from_account, from_passwd, to_account, subject, conte
 
 
 def Satrt_email(title, content):
-    target_list = ['20737506@qq.com', 'damionfan@163.com']
+    target_list = ['1139395220@qq.com', 'damionfan@163.com']
     # title = 'Today paper!'
     # content = 'arxiv 测试'
     sendEmail(target_list, title, content)
