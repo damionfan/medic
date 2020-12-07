@@ -8,7 +8,7 @@
 import os
 import re
 
-file = open('./28288113.txt.gen.mut', 'r', encoding='utf-8')
+file = open('./new.txt', 'r', encoding='utf-8')
 sections = file.readlines()
 file.close()
 gen_set = dict()
