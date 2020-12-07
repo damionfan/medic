@@ -45,7 +45,7 @@ file.writelines('\n\n')
 
 for m in mu_set.keys():
     print(m)
-    file.writelines('\n'+m+'\n')
+    file.writelines('\n' + m + '\n')
     mu_dic = dict()
     for si, section in enumerate(sections):
         lines = section.strip().split('. ')
@@ -57,10 +57,14 @@ for m in mu_set.keys():
                     gs = gen.findall(line2.strip())
                     for g in gs:
                         if m + '-' + g not in mu_dic:
-                            mu_dic[m + '-' + g] = str(abs(index - i))
+                            mu_dic[m + '-' + g] = (abs(index - i))
                         else:
-                            if mu_dic[m + '-' + g] > str(abs(index - i)):
-                                mu_dic[m + '-' + g] = str(abs(index - i))
+                            if mu_dic[m + '-' + g] > (abs(index - i)):
+                                mu_dic[m + '-' + g] = (abs(index - i))
                         # print(str(abs(index-i))+'-'+mu_set[m] + '-' + gen_set[g])
-    for mu in mu_dic.keys():
-        file.writelines(mu_dic[mu]+'-'+mu+'\n')
+
+    mu_dic = sorted(mu_dic.items(), key=lambda d: d[1], reverse=False)
+    # print(mu_dic)
+    for mu in mu_dic:
+        file.writelines(str(mu[1]) + '-' + mu[0] + '\n')
+file.close()
