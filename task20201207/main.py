@@ -8,7 +8,7 @@
 import os
 import re
 
-file = open('./new.txt', 'r', encoding='utf-8')
+file = open('././28288113.txt.gen.mut', 'r', encoding='utf-8')
 sections = file.readlines()
 file.close()
 gen_set = dict()
@@ -18,7 +18,7 @@ mutation = re.compile(r'<category=mutation>(.*?)</category>', re.I)
 gi = 0
 mi = 0
 file = open('./new_ids.txt', 'w', encoding='utf-8')
-for section in sections:
+for sid, section in enumerate(sections):
     lines = section.strip().split('. ')
     for id, line in enumerate(lines):
         gs = gen.findall(line)
@@ -37,8 +37,8 @@ for section in sections:
                 mu_set[m] = 0
             else:
                 mu_set[m] += 1
-        file.writelines('\n' + str(id) + ' ' + line.strip())
-
+        file.writelines('\n' + 'Para:{} Line:{}\t'.format(sid, id) + ' ' + line.strip())
+    file.writelines('\n')
 # print(gen_set)
 # print(mu_set)
 file = open('./result.txt', 'w', encoding='utf-8')
@@ -54,7 +54,7 @@ file.writelines('\n\n')
 '''
 
 # for m in mu_set.keys():
-for section in sections:
+for secid, section in enumerate(sections):
     lines_up = section.strip().split('. ')
     for id, li in enumerate(lines_up):
         # gs = gen.findall(line)
@@ -63,8 +63,11 @@ for section in sections:
             index = lines_up.index(li)
             index_list = [i.start() for i in re.finditer(m, li.strip())]
             for ids, _ in enumerate(index_list):
-                file.writelines('\n' + 'Lines:' + str(id) + ' ' + m + ' ID: ' + str(ids) + '\n')
-                mu_dic = dict()
+                file.writelines(
+                    '\n{} (Paragraph: {} Line: {} ID: {} )\nDistance,\t\t\tMutation,\t\t\tGene(Paragraph-Line-ID)\t\t'.format(
+                        m, secid, id, ids))
+                mu_dic_l = dict()
+                mu_dic_p = dict()
                 for si, section in enumerate(sections):
                     lines = section.strip().split('. ')
                     for i, line2 in enumerate(lines):
@@ -72,14 +75,31 @@ for section in sections:
                         for _, g in enumerate(set(gs)):
                             index_list = [i.start() for i in re.finditer(g, line2.strip())]
                             for ids, _ in enumerate(index_list):
-                                print(i, index)
-
-                                mu_dic["{}-({}-L:{}-ID:{})".format(m, g, i, ids)] = (abs(index - i))
-
+                                if secid == si:
+                                    mu_dic_l["{},\t\t\t{} ({}, {}, ID:{})".format(m, g, si, i, ids)] = (abs(index - i))
+                                else:
+                                    mu_dic_p["{},\t\t\t{} ({}, {}, ID:{}) ".format(m, g, si, i, ids)] = (
+                                        abs(secid - si))
                                 # print(str(abs(index-i))+'-'+mu_set[m] + '-' + gen_set[g])
 
-                mu_dic = sorted(mu_dic.items(), key=lambda d: d[1], reverse=False)
-                # print(mu_dic)
-                for mu in mu_dic:
-                    file.writelines(str(mu[1]) + '-' + mu[0] + '\n')
+                mu_dic_l = sorted(mu_dic_l.items(), key=lambda d: d[1], reverse=False)
+                for mu in mu_dic_l:
+                    file.writelines('\n{} lines,\t\t\t{}'.format(str(mu[1]), mu[0]))
+
+                mu_dic_p = sorted(mu_dic_p.items(), key=lambda d: d[1], reverse=False)
+
+                for mu in mu_dic_p[:5]:
+                    file.writelines('\n{} paragraphs,\t\t{}'.format(str(mu[1]), mu[0]))
+                file.writelines('\n\n')
+
 file.close()
+
+'''
+Para:58 Line:0 Input data
+
+c.C388T(Paragraph: 205 Line: 3 ID: 0 )
+  Distance,             Mutation,      Gene(Paragraph, Line, ID)  
+  0 lines,                 c.C388T,        SMS (205, 3, ID: 0)
+  1 lines,                 c.C388T,        LGALS9C (205, 4, ID:0)
+  4 paragraphs,       c.C388T        SMS(201, 0, ID:0)
+'''
